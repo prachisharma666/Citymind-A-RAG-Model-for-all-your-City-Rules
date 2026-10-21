@@ -1,0 +1,36 @@
+services:
+  - type: web
+    name: citymind
+    runtime: python
+    plan: free                      # Render's default for new services is the paid "starter" - set explicitly
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health    # cheap endpoint, makes no AI calls
+    autoDeploy: true
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.8
+      # --- secrets: Render asks you for these when you create the Blueprint ---
+      - key: GOOGLE_API_KEY
+        sync: false
+      - key: PINECONE_API_KEY
+        sync: false
+      - key: TAVILY_API_KEY         # optional - leave empty to skip web search
+        sync: false
+      - key: ADMIN_TOKEN            # optional - see README before setting
+        sync: false
+      # --- models (defaults; change here or in the dashboard) ---
+      - key: GEMINI_MODEL
+        value: gemini-3.8-flash
+      - key: GEMINI_FAST_MODEL
+        value: gemini-3.5-flash-lite
+      - key: GEMINI_FALLBACKS
+        value: gemini-3.6-flash
+      - key: GEMINI_THINKING
+        value: low
+      - key: PINECONE_INDEX_NAME
+        value: citymind
+      - key: ALLOW_UPLOADS
+        value: "true"               # set to "false" after you have loaded your cities
+      - key: CORS_ORIGINS
+        value: "*"
